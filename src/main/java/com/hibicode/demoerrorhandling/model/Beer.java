@@ -5,8 +5,10 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.validation.constraints.DecimalMin;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor
@@ -21,5 +23,9 @@ public class Beer {
 
     @NotNull(message = "type.mandatory")
     private BeerType type;
+
+    @DecimalMin(message = "volume.minValue", value = "0")
+    @NotNull(message = "volume.mandatory")
+    private BigDecimal volume;
 
 }

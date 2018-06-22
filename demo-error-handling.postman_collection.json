@@ -17,7 +17,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"name\": \"Ultimate Beer\",\n\t\"type\": \"IPA\"\n}"
+					"raw": "{\n\t\"name\": \"Ultimate Beer\",\n\t\"type\": \"IPA\",\n\t\"volume\" : \"1\"\n}"
 				},
 				"url": {
 					"raw": "http://localhost:8080/beers",
@@ -101,7 +101,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"name\": \"New Beer\",\n\t\"type\": \"INVALID\"\n}"
+					"raw": "{\n\t\"name\": \"New Beer\",\n\t\"type\": \"NONO\"\n}"
 				},
 				"url": {
 					"raw": "http://localhost:8080/beers",

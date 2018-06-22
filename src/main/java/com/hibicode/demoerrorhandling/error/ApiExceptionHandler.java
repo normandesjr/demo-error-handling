@@ -1,5 +1,6 @@
 package com.hibicode.demoerrorhandling.error;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.hibicode.demoerrorhandling.error.ErrorResponse.ApiError;
 import com.hibicode.demoerrorhandling.service.BusinessException;
 import lombok.RequiredArgsConstructor;
@@ -48,10 +49,17 @@ public class ApiExceptionHandler {
         return ResponseEntity.status(errorCode.httpStatus()).body(errorResponse);
     }
 
-    private ApiError toApiError(ErrorCode errorCode, Locale locale) {
+    @ExceptionHandler(InvalidFormatException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidFormatException(InvalidFormatException exception, Locale locale) {
+        final ErrorCode errorCode = createErrorCode("beerType.invalid", HttpStatus.BAD_REQUEST);
+        final ErrorResponse errorResponse = ErrorResponse.of(errorCode.httpStatus(), toApiError(errorCode, locale, exception.getValue()));
+        return ResponseEntity.status(errorCode.httpStatus()).body(errorResponse);
+    }
+
+    private ApiError toApiError(ErrorCode errorCode, Locale locale, Object... args) {
         String message;
         try {
-            message = apiErrorMessageSource.getMessage(errorCode.code(), new Object[]{}, locale);
+            message = apiErrorMessageSource.getMessage(errorCode.code(), args, locale);
         } catch (NoSuchMessageException e) {
             LOGGER.error("Couldn't find any message for {} code under {} locale", errorCode.code(), locale);
             message = NO_MESSAGE_AVAILABLE;
@@ -61,23 +69,10 @@ public class ApiExceptionHandler {
     }
 
     private ErrorCode createErrorCode(final String errorCode) {
-
-        return new ErrorCode() {
-
-            @Override
-            public String code() {
-                return errorCode;
-            }
-
-            @Override
-            public HttpStatus httpStatus() {
-                return HttpStatus.BAD_REQUEST;
-            }
-        };
+        return createErrorCode(errorCode, HttpStatus.BAD_REQUEST);
     }
 
     private ErrorCode createErrorCode(final String errorCode, final HttpStatus status) {
-
         return new ErrorCode() {
 
             @Override
