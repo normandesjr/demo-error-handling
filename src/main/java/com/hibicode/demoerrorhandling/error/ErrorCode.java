@@ -1,11 +1,15 @@
 package com.hibicode.demoerrorhandling.error;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
-public interface ErrorCode {
+@Getter
+@RequiredArgsConstructor
+public class ErrorCode {
 
-    String code();
+    private final String code;
 
-    HttpStatus httpStatus();
+    private final HttpStatus httpStatus;
 
 }

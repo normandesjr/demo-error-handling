@@ -45,46 +45,35 @@ public class ApiExceptionHandler {
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ErrorResponse> handleBusinessExceptions(BusinessException exception, Locale locale) {
         final ErrorCode errorCode = createErrorCode(exception.getCode(), exception.getStatus());
-        final ErrorResponse errorResponse = ErrorResponse.of(errorCode.httpStatus(), toApiError(errorCode, locale));
-        return ResponseEntity.status(errorCode.httpStatus()).body(errorResponse);
+        final ErrorResponse errorResponse = ErrorResponse.of(errorCode.getHttpStatus(), toApiError(errorCode, locale));
+        return ResponseEntity.status(errorCode.getHttpStatus()).body(errorResponse);
     }
 
     @ExceptionHandler(InvalidFormatException.class)
     public ResponseEntity<ErrorResponse> handleInvalidFormatException(InvalidFormatException exception, Locale locale) {
         final ErrorCode errorCode = createErrorCode("beerType.invalid", HttpStatus.BAD_REQUEST);
-        final ErrorResponse errorResponse = ErrorResponse.of(errorCode.httpStatus(), toApiError(errorCode, locale, exception.getValue()));
-        return ResponseEntity.status(errorCode.httpStatus()).body(errorResponse);
+        final ErrorResponse errorResponse = ErrorResponse.of(errorCode.getHttpStatus(), toApiError(errorCode, locale, exception.getValue()));
+        return ResponseEntity.status(errorCode.getHttpStatus()).body(errorResponse);
     }
 
     private ApiError toApiError(ErrorCode errorCode, Locale locale, Object... args) {
         String message;
         try {
-            message = apiErrorMessageSource.getMessage(errorCode.code(), args, locale);
+            message = apiErrorMessageSource.getMessage(errorCode.getCode(), args, locale);
         } catch (NoSuchMessageException e) {
-            LOGGER.error("Couldn't find any message for {} code under {} locale", errorCode.code(), locale);
+            LOGGER.error("Couldn't find any message for {} code under {} locale", errorCode.getCode(), locale);
             message = NO_MESSAGE_AVAILABLE;
         }
 
-        return new ApiError(errorCode.code(), message);
+        return new ApiError(errorCode.getCode(), message);
+    }
+
+    private ErrorCode createErrorCode(final String errorCode, final HttpStatus status) {
+        return new ErrorCode(errorCode, status);
     }
 
     private ErrorCode createErrorCode(final String errorCode) {
         return createErrorCode(errorCode, HttpStatus.BAD_REQUEST);
-    }
-
-    private ErrorCode createErrorCode(final String errorCode, final HttpStatus status) {
-        return new ErrorCode() {
-
-            @Override
-            public String code() {
-                return errorCode;
-            }
-
-            @Override
-            public HttpStatus httpStatus() {
-                return status;
-            }
-        };
     }
 
 }
