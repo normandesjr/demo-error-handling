@@ -1,12 +1,18 @@
+repositories {
+    jcenter()
+}
+
 buildscript {
     ext {
         springBootVersion = '2.0.3.RELEASE'
     }
     repositories {
+        jcenter()
         mavenCentral()
     }
     dependencies {
         classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath("com.bmuschko:gradle-docker-plugin:3.4.0")
     }
 }
 
@@ -14,6 +20,8 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'com.bmuschko.docker-remote-api'
+
 
 group = 'com.hibicode'
 version = '0.0.1-SNAPSHOT'
@@ -33,4 +41,14 @@ dependencies {
     testCompile('org.springframework.boot:spring-boot-starter-test')
 
     compile('org.projectlombok:lombok')
+
+    compile 'com.aries:docker-java-shaded:3.0.14'
+
+}
+
+import com.bmuschko.gradle.docker.tasks.image.DockerBuildImage
+
+task buildImage(type: DockerBuildImage) {
+    inputDir = file('.')
+    tag = 'normandesjr/demo-error-handler:latest'
 }
